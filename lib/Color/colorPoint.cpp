@@ -89,3 +89,14 @@ uint32_t colorPoint::getRGB(){
         color = ((uint8_t)r << 16) | ((uint8_t)g << 8) | ((uint8_t)b);
         return color;
 }
+
+std::string colorPoint::getColorString(){
+        char red[4];
+        char green[4];
+        char blue[4];
+        sprintf(red, "%i", this->getIntR());
+        sprintf(green, "%i", this->getIntG());
+        sprintf(blue, "%i", this->getIntB());
+        std::string color = std::string(red) + "," + green + "," + blue;
+        return color;
+}

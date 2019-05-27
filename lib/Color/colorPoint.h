@@ -1,7 +1,10 @@
 #ifndef COLORPOINT_H_
 #define COLORPOINT_H_
 
+#include <stdio.h>
 #include <stdint.h>
+#include <string>
+#include <string.h>
 
 class colorPoint {
 private:
@@ -29,6 +32,7 @@ float getB();
 float getL();
 void setRGBL(uint32_t color);
 uint32_t getRGB();
+std::string getColorString();
 };
 
 

@@ -1,4 +1,4 @@
-#include "config_hacked.h"
+#include "config.h"
 #include <Arduino.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WebServer.h>
@@ -144,6 +144,10 @@ void callback(char *topic, byte *payload, unsigned int length) {
                 *(b-1) = 0;
                 colorPoint newColor = colorPoint((uint8_t)atol(r),(uint8_t)atol(g),(uint8_t)atol(b));
                 strip.moveToColor(newColor);
+
+                string feedbackTopic = homieCTRL.getPubString("rgb-strip", "rgb");
+                if(feedbackTopic == "") feedbackTopic = "error";
+                client.publish(feedbackTopic.c_str(),newColor.getColorString().c_str(),true);
         }
 }
 

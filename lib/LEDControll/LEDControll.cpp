@@ -1,5 +1,6 @@
 #include "LEDControll.hpp"
 
+
 LEDControll::LEDControll(uint8_t pinRed, uint8_t pinGreen, uint8_t pinBlue){
         this->pinRed = pinRed;
         this->pinGreen = pinGreen;

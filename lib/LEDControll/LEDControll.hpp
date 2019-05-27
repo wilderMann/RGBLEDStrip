@@ -4,6 +4,8 @@
 #include "colorPoint.h"
 #include "colorVector.h"
 
+#define INVERTED 1
+
 class LEDControll {
 private:
 uint8_t pinRed, pinGreen, pinBlue;
