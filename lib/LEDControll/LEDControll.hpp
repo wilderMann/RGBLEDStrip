@@ -4,14 +4,12 @@
 #include "colorPoint.h"
 #include "colorVector.h"
 
-#define INVERTED 1
-
 class LEDControll {
 private:
-uint8_t pinRed, pinGreen, pinBlue;
+uint8_t pinRed, pinGreen, pinBlue, inverted;
 colorPoint currentColor;
 public:
-LEDControll(uint8_t pinRed, uint8_t pinGreen, uint8_t pinBlue);
+LEDControll(uint8_t pinRed, uint8_t pinGreen, uint8_t pinBlue, uint8_t inverted);
 void init();
 void setStripColor(uint8_t r, uint8_t g, uint8_t b);
 void setStripColor(colorPoint c);

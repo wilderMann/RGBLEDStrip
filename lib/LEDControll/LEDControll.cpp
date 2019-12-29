@@ -1,10 +1,11 @@
 #include "LEDControll.hpp"
 
 
-LEDControll::LEDControll(uint8_t pinRed, uint8_t pinGreen, uint8_t pinBlue){
+LEDControll::LEDControll(uint8_t pinRed, uint8_t pinGreen, uint8_t pinBlue, uint8_t inverted){
         this->pinRed = pinRed;
         this->pinGreen = pinGreen;
         this->pinBlue = pinBlue;
+        this->inverted = inverted;
 }
 
 void LEDControll::init(){
@@ -21,16 +22,15 @@ void LEDControll::setStripColor(uint8_t r, uint8_t g, uint8_t b){
         blue = 4*b;
         colorPoint color = colorPoint(r, g, b);
         this->currentColor = color;
-        #if INVERTED
-        analogWrite(this->pinRed, 1024 - red);
-        analogWrite(this->pinGreen, 1024 - green);
-        analogWrite(this->pinBlue, 1024 - blue);
-        #else
-        analogWrite(this->pinRed, red);
-        analogWrite(this->pinGreen, green);
-        analogWrite(this->pinBlue, blue);
-        #endif
-
+        if(inverted) {
+                analogWrite(this->pinRed, 1024 - red);
+                analogWrite(this->pinGreen, 1024 - green);
+                analogWrite(this->pinBlue, 1024 - blue);
+        }else{
+                analogWrite(this->pinRed, red);
+                analogWrite(this->pinGreen, green);
+                analogWrite(this->pinBlue, blue);
+        }
 }
 
 void LEDControll::setStripColor(colorPoint c){

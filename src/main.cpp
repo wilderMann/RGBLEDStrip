@@ -1,4 +1,4 @@
-#include "config.h"
+#include "config_hacked.h"
 #include <Arduino.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WebServer.h>
@@ -24,15 +24,13 @@ const char *update_username = USERNAME;
 const char *update_password = PASSWORD;
 String ClientID;
 unsigned long lastReconnectAttempt = 0;
-uint8_t flag_pubTimer = 1;
 
 ESP8266HTTPUpdateServer httpUpdater;
 ESP8266WebServer httpServer(80);
 WiFiClient espClient;
 PubSubClient client(MQTT_IP, MQTT_PORT, callback, espClient);
-LEDControll strip(RED, GREEN, BLUE);
+LEDControll strip(RED, GREEN, BLUE, INVERTED);
 Homie homieCTRL = Homie(&client);
-Ticker ShedPub;
 
 void setup() {
         if(SERIAL) Serial.begin(115200);
@@ -47,9 +45,8 @@ void setup() {
         if(SERIAL) Serial.print("Connected, IP address: ");
         if(SERIAL) Serial.println(WiFi.localIP());
 
-        HomieDevice homieDevice = HomieDevice(DEVICE_NAME, F_DEVICE_NAME, WiFi.localIP().toString().c_str(),
-                                              WiFi.macAddress().c_str(), FW_NAME, FW_VERSION,
-                                              "esp01-s", "60");
+        HomieDevice homieDevice = HomieDevice(DEVICE_NAME, F_DEVICE_NAME, "",
+                                              CHIP_TYPE);
         HomieNode rgbStrip = HomieNode("rgb-strip", "RGB Strip", "RGB Strip");
         HomieProperties rgb = HomieProperties("rgb", "RGB", true, true, "",
                                               homie::color_t, "rgb");
@@ -74,15 +71,6 @@ void loop() {
                                 lastReconnectAttempt = 0;
                         }
                 }
-        }
-        if(flag_pubTimer) {
-                long time = millis() / 1000;
-                string topic = "homie/" + string(DEVICE_NAME) + "/$stats/uptime";
-                char payload[20];
-                sprintf(payload, "%ld", time);
-                client.publish(topic.c_str(), payload,true);
-                ShedPub.once(60.0, shedPubISR);
-                flag_pubTimer = 0;
         }
         homieCTRL.loop();
         httpServer.handleClient();
@@ -110,6 +98,9 @@ boolean reconnect() {
 
 void handleStatus() {
         String message;
+        message += "name: " + String(DEVICE_NAME) + "\n";
+        message += "chip: " + String(CHIP_TYPE) + "\n";
+        message += "IP: " + WiFi.localIP().toString() + "\n";
         message +="free Heap: " + String(ESP.getFreeHeap()) + "\n";
         message += "heap Fragmentation: " + String(ESP.getHeapFragmentation()) + "\n";
         message += "MaxFreeBlockSize: " + String(ESP.getMaxFreeBlockSize()) + "\n";
@@ -149,8 +140,4 @@ void callback(char *topic, byte *payload, unsigned int length) {
                 if(feedbackTopic == "") feedbackTopic = "error";
                 client.publish(feedbackTopic.c_str(),newColor.getColorString().c_str(),true);
         }
-}
-
-void shedPubISR() {
-        flag_pubTimer = 1;
 }
